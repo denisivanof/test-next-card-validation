@@ -7,8 +7,10 @@ const TextMaskCustom = React.forwardRef( function TextMaskCustom(props,ref) {
 
     })
     const mask = {
-        CardNumber: "#000-0000-0000-0000",
-        ExpirationDate: "#00/0000"
+        CardNumber: "#000 0000 0000 0000",
+        ExpDate: "#0/0000",
+        Cvv: "#00",
+        Amount: Number
     }
 
     return (
@@ -16,7 +18,7 @@ const TextMaskCustom = React.forwardRef( function TextMaskCustom(props,ref) {
             {...other}
             mask={mask[name]}
             definitions={{
-                '#': /[1-9]/,
+                '#': /[0-9]/,
             }}
             inputRef={ref}
             onAccept={(value) => onChange({ target: { name: props.name, value } })}
