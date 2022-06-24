@@ -1,20 +1,40 @@
 import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
 import {
     Box, Button,
     Card,
     CardContent,
-    CardMedia,
     Container,
     FormControl,
     FormHelperText,
-    Input,
-    InputLabel, OutlinedInput,
-    TextField
+    InputLabel, OutlinedInput, styled,
 } from "@mui/material";
 import {useEffect, useState} from "react";
 import TextMaskCustom from "../components/TextMaskCustom";
+
+const Btn = styled(Button)({
+    outline: 'none',
+    width: '80px',
+    height: '30px',
+    borderRadius: '5px',
+    border: '1px solid grey',
+    cursor: 'pointer',
+    position: 'relative',
+    overflow: 'hidden',
+    color: '#000',
+    '&:before': {
+        content: '""',
+        position: 'absolute',
+        top: 0,
+        left: '-100%',
+        width: '200%',
+        height: '100%',
+        background: 'linear-gradient(to right, lightgreen 0%,lightgreen 50%,#fff 50%,#fff 100%)',
+        transition: 'left .7s',
+    },
+    '&:hover:before':{
+        left: '0'
+    }
+})
 
 export default function Home() {
     const [values, setValues] = useState({
@@ -88,10 +108,12 @@ export default function Home() {
             [e.target.id]: true
         })
     }
-    const Submit = (e)=>{
+    const Submit = async (e)=>{
         e.preventDefault()
         let data = {...values, CardNumber: values.CardNumber.replace(/[^0-9]/g, '')}
-        console.log(JSON.stringify(data))
+        const res = await fetch('/api/redis', {method: 'POST', body: JSON.stringify(data)})
+        const resData = await res.json()
+        console.log(resData)
     }
   return (
     <Container>
@@ -102,24 +124,12 @@ export default function Home() {
           <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"/>
           <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
       </Head>
-      <main style={{height: '100vh'}}>
-          <Box sx={{display: 'flex', justifyContent: 'center'}}>
+      <main style={{height: '100vh', display: 'flex', alignItems: 'center',justifyContent: 'center',}}>
+          <Box sx={{}}>
               <Card sx={{maxWidth: 345}}>
-                  <CardMedia
-                      component="img"
-                      image="/bank-card.jpg"
-                      alt="Bank card"
-                  />
                   <CardContent>
-                      <Box
-                          component="form"
-                          vallidate
-                          sx={{
-                              width: 320,
-                              maxWidth: '100%',
-                          }}
-                      >
-                          <FormControl error={error.CardNumber} sx={{margin: 2, width: '100%', maxWidth: 260}}
+                      <Box component="form" vallidate sx={{width: '320'}}>
+                          <FormControl error={error.CardNumber} sx={{marginBottom: 2, width: '100%', }}
                                        onFocus={OnFocus}>
                               <InputLabel htmlFor="CardNumber">Номер карты</InputLabel>
                               <OutlinedInput
@@ -133,7 +143,7 @@ export default function Home() {
                               <FormHelperText>Введите номер
                                   карты {values.CardNumber.replace(/[^0-9]/g, '').length}/16</FormHelperText>
                           </FormControl>
-                          <FormControl error={error.ExpDate} sx={{margin: 2, width: '100%', maxWidth: 260}}
+                          <FormControl error={error.ExpDate} sx={{marginBottom: 2, width: '100%'}}
                                        onFocus={OnFocus}>
                               <InputLabel htmlFor="ExpDate">Срок действия</InputLabel>
                               <OutlinedInput
@@ -146,7 +156,7 @@ export default function Home() {
                               />
                               <FormHelperText>формат даты MM/YYYY</FormHelperText>
                           </FormControl>
-                          <FormControl error={error.Cvv} sx={{margin: 2, width: '100%', maxWidth: 260}}
+                          <FormControl error={error.Cvv} sx={{marginBottom: 2, width: '100%'}}
                                        onFocus={OnFocus}>
                               <InputLabel htmlFor="Cvv">CVV</InputLabel>
                               <OutlinedInput
@@ -159,7 +169,7 @@ export default function Home() {
                               />
                               <FormHelperText>CVV {values.Cvv.length}/3</FormHelperText>
                           </FormControl>
-                          <FormControl error={error.Amount} sx={{margin: 2, width: '100%', maxWidth: 260}}
+                          <FormControl error={error.Amount} sx={{marginBottom: 2, width: '100%'}}
                                        onFocus={OnFocus}>
                               <InputLabel htmlFor="Amount">Сумма</InputLabel>
                               <OutlinedInput
@@ -172,11 +182,10 @@ export default function Home() {
                               />
                               <FormHelperText>Сумма</FormHelperText>
                           </FormControl>
-                          <div style={{display: "flex", justifyContent: 'end', width: '260px'}}>
-                              <Button variant="contained" disabled={Disabled} onClick={Submit}>Submit</Button>
+                          <div style={{display: "flex", justifyContent: 'end'}}>
+                              <Btn disabled={Disabled}  onClick={Submit}><span style={{position: "relative"}}>Submit</span></Btn>
                           </div>
                       </Box>
-
                   </CardContent>
               </Card>
           </Box>
